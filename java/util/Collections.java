@@ -159,7 +159,7 @@ public class Collections {
 
     public static <T> List<T> unmodifiableList(List<? extends T> list) {
         return (list instanceof RandomAccess ?
-                )
+        )
     }
 
     static class UnmodifiableList<E> extends UnmodifiableCollection<E> implements List<E> {

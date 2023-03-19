@@ -19,6 +19,10 @@ public final class String implements java.io.Serializable {
         this.hash = original.hash;
     }
 
+    public String(char[] value, boolean share) {
+        this.value = value;
+    }
+
     public String(char value[]) {
         this.value = Arrays.copyOf(value, value.length);
     }

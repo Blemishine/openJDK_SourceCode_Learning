@@ -23,4 +23,8 @@ public class Arrays {
         System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
         return copy;
     }
+
+    public static <T> void sort(T[] a, Comparator<? super T> c) {
+
+    }
 }
