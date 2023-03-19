@@ -1,6 +1,7 @@
 package java.util;
 
 import java.io.Serializable;
+import java.util.function.BiConsumer;
 
 public interface Map<K, V> {
 
@@ -12,7 +13,7 @@ public interface Map<K, V> {
 
     boolean containsValue(Object value);
 
-    V getKey(Object key);
+    V get(Object key);
 
     V put(K key, V value);
 
@@ -50,5 +51,28 @@ public interface Map<K, V> {
                     (c1, c2) -> c1.getValue().compareTo(c2.getValue());
         }
 
+        public static <K, V> Comparator<Map.Entry<K, V>> comparingByKey(Comparator<? super K> cmp) {
+            Objects.requireNonNull(cmp);
+            return (Comparator<Map.Entry<K,V>> & Serializable)
+                    (c1, c2) -> cmp.compare(c1.getKey(), c2.getKey());
+        }
+
+        public static <K, V> Comparator<Map.Entry<K, V>> comparingByValue(Comparator<? super V> cmp) {
+            Objects.requireNonNull(cmp);
+            return (Comparator<Map.Entry<K,V>> & Serializable)
+                    (c1, c2) -> cmp.compare(c1.getValue(), c2.getValue());
+        }
     }
+
+    boolean equals(Object o);
+
+    int hashCode();
+
+    default V getOrDefault(Object key, V defaultValue) {
+        V v;
+        return (((v = get(key)) != null) || containsKey(key))
+                ? v
+                : defaultValue;
+    }
+
 }
