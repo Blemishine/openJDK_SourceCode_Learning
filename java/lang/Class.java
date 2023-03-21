@@ -24,4 +24,6 @@ public class Class<T> implements java.io.Serializable {
 
     private transient String name;
     private native String getName0();
+
+    public native Class<?> getComponentType();
 }

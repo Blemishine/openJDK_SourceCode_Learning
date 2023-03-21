@@ -163,6 +163,35 @@ public final class Integer extends Number implements Comparable<Integer> {
         }
     }
 
+    private final int value;
+
+    public Integer(int value) {
+        this.value = value;
+    }
+
+    public byte byteValue() {
+        return (byte) value;
+    }
+
+    public short shortValue() {
+        return (short) value;
+    }
+
+    public int intValue() {
+        return value;
+    }
+
+    public long longValue() {
+        return (long) value;
+    }
+
+    public float floatValue() {
+        return (float) value;
+    }
+
+    public double doubleValue() {
+        return (double) value;
+    }
 
     final static int[] sizeTable = {
             9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999, Integer.MAX_VALUE
@@ -174,6 +203,14 @@ public final class Integer extends Number implements Comparable<Integer> {
                 return i + 1;
             }
         }
+    }
+
+    public int compareTo(Integer anotherInteger) {
+        return compareTo(this.value, anotherInteger.value);
+    }
+
+    public static int compareTo(int x, int y) {
+        return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 
     public static String toString(int i) {

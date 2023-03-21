@@ -9,4 +9,28 @@ public final class Character implements java.io.Serializable, Comparable<Charact
     public static final char MIN_VALUE = '\u0000';
 
     public static final char MAX_VALUE = '\uFFFF';
+
+    public static char toLowerCase(char ch) {
+        return (char)toLowerCase((int)ch);
+    }
+
+    public static int toLowerCase(int codePoint) {
+        return CharacterData.of(codePoint).toLowerCase(codePoint);
+    }
+
+    public static char toUpperCase(char ch) {
+        return (char)toUpperCase((int) ch);
+    }
+
+    public static int toUpperCase(int codePoint) {
+        return CharacterData.of(codePoint).toUpperCase(codePoint);
+    }
+
+    public int compareTo(Character anotherCharacter) {
+        return compare(this.value, anotherCharacter.value);
+    }
+
+    public static int compare(char x, char y) {
+        return  x - y;
+    }
 }

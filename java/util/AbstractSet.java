@@ -1,6 +1,6 @@
 package java.util;
 
-public class AbstractSet<E> extends AbstractCollection<E> implements Set<E> {
+public abstract class AbstractSet<E> extends AbstractCollection<E> implements Set<E> {
 
     protected AbstractSet() {}
 

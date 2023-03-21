@@ -1,4 +1,4 @@
 package java.util;
 
-public class WeakHashMap<K, V> extends  {
+public class WeakHashMap<K, V> {
 }
