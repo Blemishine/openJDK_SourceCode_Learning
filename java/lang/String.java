@@ -1,5 +1,7 @@
 package java.lang;
 
+import java.util.Arrays;
+
 public final class String implements java.io.Serializable {
 
     private final char value[];
@@ -16,6 +18,80 @@ public final class String implements java.io.Serializable {
         this.value = original.value;
         this.hash = original.hash;
     }
+
+    public String(char[] value, boolean share) {
+        this.value = value;
+    }
+
+    public String(char value[]) {
+        this.value = Arrays.copyOf(value, value.length);
+    }
+
+    public String(char value[], int offset, int count) {
+        if (offset < 0) {
+            throw new StringIndexOutOfBoundsException(offset);
+        }
+        if (count <= 0) {
+            if (count < 0) {
+                throw new StringIndexOutOfBoundsException(count);
+            }
+            if (offset <= value.length) {
+                this.value = "".value;
+                return;
+            }
+        }
+
+        if (offset > value.length - count) {
+            throw new StringIndexOutOfBoundsException(offset + count);
+        }
+
+        this.value = Arrays.copyOfRange(value, offset, offset + count);
+    }
+
+    public boolean equalsIgnoreCase(String anotherString) {
+        return (this == anotherString) ? true
+                : (anotherString != null)
+                && (anotherString.value.length == value.length)
+                && regionMatches(true, 0, anotherString, 0, value.length);
+    }
+
+    public boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len) {
+        char ta[] = value;
+        int to = toffset;
+        char pa[] = other.value;
+        int po = ooffset;
+
+        if ((ooffset < 0) || (toffset < 0) || (toffset > (long)value.length - len) || (ooffset > (long)other.value.length - len)) {
+            return false;
+        }
+
+        while (len-- > 0) {
+            char c1 = ta[to++];
+            char c2 = pa[po++];
+            if (c1 == c2) {
+                continue;
+            }
+            if (ignoreCase) {
+                char u1 = Character.toUpperCase(c1);
+                char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public char[] toCharArray() {
+        char result[] = new char[value.length];
+        System.arraycopy(value, 0, result, 0, value.length);
+        return result;
+    }
+
 
     public int hashCode() {
         int h = hash;

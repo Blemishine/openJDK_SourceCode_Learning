@@ -14,7 +14,7 @@ public interface Collection<E> extends Iterable<E> {
 
     Object[] toArray();
 
-    <T> T toArray(T[] a);
+    <T> T[] toArray(T[] a);
 
     boolean add (E e);
 
@@ -46,5 +46,7 @@ public interface Collection<E> extends Iterable<E> {
         }
         return removed;
     }
+
+
 
 }

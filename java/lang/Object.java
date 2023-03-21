@@ -16,5 +16,7 @@ public class Object {
         return (this == obj);
     }
 
-
+    public String toString() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+    }
 }
