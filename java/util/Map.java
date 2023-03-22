@@ -1,7 +1,6 @@
 package java.util;
 
 import java.io.Serializable;
-import java.util.function.BiConsumer;
 
 public interface Map<K, V> {
 
@@ -34,7 +33,7 @@ public interface Map<K, V> {
 
         V getValue();
 
-        V setValue();
+        V setValue(V value);
 
         boolean equals(Object o);
 

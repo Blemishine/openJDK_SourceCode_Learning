@@ -19,4 +19,8 @@ public class Object {
     public String toString() {
         return getClass().getName() + "@" + Integer.toHexString(hashCode());
     }
+
+    public final native void wait(long timeout) throws InterruptedException;
+
+    public final native void notifyAll();
 }

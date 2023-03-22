@@ -18,3 +18,8 @@ JDK源码学习
 ## 0321
 - 补完各类toString实现方法->各类之间的实现方法
 - 回到ClassLoader实现上来
+
+## 0322
+- 关注WeakHashMap实现
+- 涉及java.lang.ref中引用Reference、弱引用WeakReference以及引用队列ReferenceQueue相关
+- 涉及虚拟机引用计数相关(sun.misc.VM -> FinalRefCount)

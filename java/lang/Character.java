@@ -26,6 +26,14 @@ public final class Character implements java.io.Serializable, Comparable<Charact
         return CharacterData.of(codePoint).toUpperCase(codePoint);
     }
 
+    private final char value;
+
+    private static final long serialVersionUID = 3786198910865385080L;
+
+    public Character(char value) {
+        this.value = value;
+    }
+
     public int compareTo(Character anotherCharacter) {
         return compare(this.value, anotherCharacter.value);
     }
