@@ -9,4 +9,6 @@ public final class System {
     }
 
     public static native void arraycopy(Object src, int srcPos, Object des, int destPos, int length);
+
+    public static native long nanoTime();
 }
