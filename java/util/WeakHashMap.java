@@ -33,6 +33,16 @@ public class WeakHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
         return h ^ (h >>> 7) ^ (h >>> 4);
     }
 
+    private static final Object NULL_KEY = new Object();
+
+    private static Object maskNull(Object key) {
+        return (key == null) ? NULL_KEY : key;
+    }
+
+    static Object unmaskNull(Object key) {
+        return (key == NULL_KEY) ? null : key;
+    }
+
     private static int indexFor(int h, int length) {
         return h & (length - 1);
     }
@@ -45,11 +55,33 @@ public class WeakHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
                 int i = indexFor(e.hash, table.length);
 
                 Entry<K, V> prev = table[i];
+                Entry<K, V> p = prev;
+                while (p != null) {
+                    Entry<K, V> next = p.next;
+                    if (p == e) {
+                        if (prev == e) {
+                            table[i] = next;
+                        }
+                        else {
+                            prev.next = next;
+                        }
+                        e.value = null;
+                        size--;
+                        break;
+                    }
+                    prev = p;
+                    p = next;
+                }
             }
         }
     }
 
-    Entry<K, V>getEntry(Object key) {
+    private Entry<K, V>[] getTable() {
+        expungeStaleEntries();
+        return table;
+    }
+
+    Entry<K, V> getEntry(Object key) {
         Object k = maskNull(key);
         int h = hash(k);
         Entry<K, V>[] tab = getTable();
@@ -87,6 +119,14 @@ public class WeakHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
         table = newTable(capacity);
         this.loadFactor = loadFactor;
         threshold = (int) (capacity * loadFactor);
+    }
+
+    public WeakHashMap(int initialCapacity) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    public WeakHashMap() {
+        this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
     private static class Entry<K, V> extends WeakReference<Object> implements Map.Entry<K, V> {
@@ -176,7 +216,92 @@ public class WeakHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
         return false;
     }
 
-    private transient Set<Map.Entry<K ,V>> entrySet;
+    private abstract class HashIterator<T> implements Iterator<T> {
+        private int index;
+        private Entry<K, V> entry;
+        private Entry<K, V> lastReturned;
+        private int expectedModCount = modCount;
+
+        private Object nextKey;
+
+        private Object currentKey;
+
+        HashIterator() {
+            index = isEmpty() ? 0 : table.length;
+        }
+
+        public boolean hasNext() {
+            Entry<K, V>[] t = table;
+
+            while (nextKey == null) {
+                Entry<K, V> e = entry;
+                int i = index;
+                while (e == null && i > 0) {
+                    e = t[--i];
+                }
+                entry = e;
+                index = i;
+                if (e == null) {
+                    currentKey = null;
+                    return false;
+                }
+                nextKey = e.get();
+                if (nextKey == null) {
+                    entry = entry.next;
+                }
+            }
+            return true;
+        }
+
+        protected Entry<K, V> nextEntry() {
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (nextKey == null && !hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            lastReturned = entry;
+            entry = entry.next;
+            currentKey = nextKey;
+            nextKey = null;
+            return lastReturned;
+        }
+
+        public void remove() {
+            if (lastReturned == null) {
+                throw new IllegalStateException();
+            }
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+
+            WeakHashMap.this.remove(currentKey);
+            expectedModCount = modCount;
+            lastReturned = null;
+            currentKey = null;
+        }
+    }
+
+    private class ValueIterator extends HashIterator<V> {
+        public V next() {
+            return nextEntry().value;
+        }
+    }
+
+    private class KeyIterator extends HashIterator<K> {
+        public K next() {
+            return nextEntry().getKey();
+        }
+    }
+
+    private class EntryIterator extends HashIterator<Map.Entry<K, V>> {
+        public  Map.Entry<K, V> next() {
+            return nextEntry();
+        }
+    }
+
+    private transient Set<Map.Entry<K, V>> entrySet;
 
     public Set<Map.Entry<K, V>> entrySet() {
         Set<Map.Entry<K, V>> es = entrySet;

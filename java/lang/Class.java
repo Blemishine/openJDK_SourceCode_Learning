@@ -26,4 +26,6 @@ public class Class<T> implements java.io.Serializable {
     private native String getName0();
 
     public native Class<?> getComponentType();
+
+    public native Class<? super T> getSuperClass();
 }

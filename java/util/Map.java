@@ -1,6 +1,9 @@
 package java.util;
 
 import java.io.Serializable;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public interface Map<K, V> {
 
@@ -72,6 +75,109 @@ public interface Map<K, V> {
         return (((v = get(key)) != null) || containsKey(key))
                 ? v
                 : defaultValue;
+    }
+
+    default void forEach(BiConsumer<? super K, ? super V> action) {
+        Objects.requireNonNull(action);
+        for (Map.Entry<K, V> entry : entrySet()) {
+            K k;
+            V v;
+            try {
+                k = entry.getKey();
+                v = entry.getValue();
+            } catch (IllegalStateException ise) {
+                throw new ConcurrentModificationException(ise);
+            }
+            action.accept(k, v);
+        }
+    }
+
+    default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        Objects.requireNonNull(function);
+        for (Map.Entry<K, V> entry : entrySet()) {
+            K k;
+            V v;
+            try {
+                k = entry.getKey();
+                v = entry.getValue();
+            } catch (IllegalStateException ise) {
+                throw new ConcurrentModificationException(ise);
+            }
+
+            v = function.apply(k, v);
+
+            try {
+                entry.setValue(v);
+            } catch (IllegalStateException ise) {
+                throw new ConcurrentModificationException(ise);
+            }
+        }
+    }
+
+    default V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        Objects.requireNonNull(mappingFunction);
+        V v;
+        if ((v = get(key)) == null) {
+            V newValue;
+            if ((newValue = mappingFunction.apply(key)) != null) {
+                put(key, newValue);
+                return newValue;
+            }
+        }
+
+        return v;
+    }
+
+    default V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        V oldValue = get(key);
+
+        V newValue = remappingFunction.apply(key, oldValue);
+        if (newValue == null) {
+            if (oldValue != null || containsKey(key)) {
+                remove(key);
+                return null;
+            } else {
+                return null;
+            }
+        } else {
+            put(key, newValue);
+            return newValue;
+        }
+    }
+
+    default V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        V oldValue = get(key);
+
+        V newValue = remappingFunction.apply(key, oldValue);
+        if (newValue == null) {
+            if (oldValue != null || containsKey(key)) {
+                remove(key);
+                return null;
+            } else {
+                return null;
+            }
+        } else {
+            put(key, newValue);
+            return newValue;
+        }
+    }
+
+    default V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        Objects.requireNonNull(value);
+
+        V oldValue = get(key);
+        V newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
+
+        if (newValue == null) {
+            remove(key);
+        } else {
+            put(key, newValue);
+        }
+
+        return newValue;
     }
 
 }
