@@ -276,6 +276,10 @@ public class Collections {
         }
     }
 
+    public static <E> Set<E> newSetFromMap(Map<E, Boolean> map) {
+        return new SetFromMap<>(map);
+    }
+
     private static class SetFromMap<E> extends AbstractSet<E> implements Set<E>, Serializable {
         private final Map<E, Boolean> m;
         private transient Set<E> s;

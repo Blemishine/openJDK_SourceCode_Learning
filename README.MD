@@ -23,3 +23,8 @@ JDK源码学习
 - 关注WeakHashMap实现
 - 涉及java.lang.ref中引用Reference、弱引用WeakReference以及引用队列ReferenceQueue相关
 - 涉及虚拟机引用计数相关(sun.misc.VM -> FinalRefCount)
+
+## 0323
+- ClassLoader->ConcurrentHashMap->ConcurrentMap->Map实现链
+- 补全Map中的default方法
+- 关注ConcurrentHashMap的实现
