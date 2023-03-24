@@ -1,5 +1,9 @@
 package java.lang;
 
+import sun.reflect.generics.repository.ClassRepository;
+
+import java.lang.reflect.Type;
+
 public class Class<T> implements java.io.Serializable {
 
     private static final int ANNOTATION = 0x00002000;
@@ -20,6 +24,11 @@ public class Class<T> implements java.io.Serializable {
             this.name = name = getName0();
         }
         return name;
+    }
+
+    public Type[] getGenericInterfaces() {
+        ClassRepository info = getGenericInfo();
+        return (info == null) ? getInterfaces() : info.getSuperInterfaces();
     }
 
     private transient String name;

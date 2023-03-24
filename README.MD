@@ -28,3 +28,9 @@ JDK源码学习
 - ClassLoader->ConcurrentHashMap->ConcurrentMap->Map实现链
 - 补全Map中的default方法
 - 关注ConcurrentHashMap的实现
+
+## 0324
+- ConcurrentHashMap->Class.getGenericInterfaces()->sun.reflect.*
+- 反射机制实现链
+- 签名机制(Signature)->各类签名(sun.reflect.tree.*Signature)
+- ClassRepository
