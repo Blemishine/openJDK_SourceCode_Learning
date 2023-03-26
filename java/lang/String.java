@@ -77,6 +77,10 @@ public final class String implements java.io.Serializable, CharSequence {
         return ((beginIndex == 0) && (endIndex == value.length)) ? this : new String(value, beginIndex, subLen);
     }
 
+    public CharSequence subSequence(int beginIndex, int endIndex) {
+        return this.subString(beginIndex, endIndex);
+    }
+
     public boolean equalsIgnoreCase(String anotherString) {
         return (this == anotherString) ? true
                 : (anotherString != null)

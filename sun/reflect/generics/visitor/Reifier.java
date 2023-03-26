@@ -39,12 +39,6 @@ public class Reifier implements TypeTreeVisitor<Type> {
         return resultType;
     }
 
-    public void visitArrayTypeSignature(ArrayTypeSignature a) {
-        a.getComponentType().accept(this);
-        Type ct = resultType;
-        resultType = getFactory().makeArrayType(ct);
-    }
-
     public void visitFormalTypeParameter(FormalTypeParameter ftp) {
         resultType = getFactory().makeTypeVariable(ftp.getName(), ftp.getBounds());
     }
@@ -56,58 +50,97 @@ public class Reifier implements TypeTreeVisitor<Type> {
         SimpleClassTypeSignature sc = iter.next();
         StringBuilder n = new StringBuilder(sc.getName());
         boolean dollar = sc.getDollar();
+
+        while (iter.hasNext() && sc.getTypeArguments().length == 0) {
+            sc = iter.next();
+            dollar = sc.getDollar();
+            n.append(dollar ? "$" : ".").append(sc.getName());
+        }
+
+        assert (!(iter.hasNext()) || (sc.getTypeArguments().length > 0));
+
+        Type c = getFactory().makeNamedType(n.toString());
+
+        if (sc.getTypeArguments().length == 0) {
+            assert (!iter.hasNext());
+            resultType = c;
+        } else {
+            assert (sc.getTypeArguments().length > 0);
+            Type[] pts = reifyTypeArguments(sc.getTypeArguments());
+
+            Type owner = getFactory().makeParameterizedType(c, pts, null);
+
+            dollar = false;
+            while (iter.hasNext()) {
+                sc = iter.next();
+                dollar = sc.getDollar();
+                n.append(dollar ? "$" : ".").append(sc.getName());
+                c = getFactory().makeNamedType(n.toString());
+                pts = reifyTypeArguments(sc.getTypeArguments());
+
+                owner = getFactory().makeParameterizedType(c, pts, owner);
+            }
+            resultType = owner;
+        }
     }
 
-    public void visitTypeVariableSignature(TypeVariableSignature tv){
+
+    public void visitArrayTypeSignature(ArrayTypeSignature a) {
+        a.getComponentType().accept(this);
+        Type ct = resultType;
+        resultType = getFactory().makeArrayType(ct);
+    }
+
+    public void visitTypeVariableSignature(TypeVariableSignature tv) {
         resultType = getFactory().findTypeVariable(tv.getIdentifier());
     }
 
-    public void visitWildcard(Wildcard w){
+    public void visitWildcard(Wildcard w) {
         resultType = getFactory().makeWildcard(w.getUpperBounds(),
                 w.getLowerBounds());
     }
 
-    public void visitSimpleClassTypeSignature(SimpleClassTypeSignature sct){
+    public void visitSimpleClassTypeSignature(SimpleClassTypeSignature sct) {
         resultType = getFactory().makeNamedType(sct.getName());
     }
 
-    public void visitBottomSignature(BottomSignature b){
+    public void visitBottomSignature(BottomSignature b) {
 
     }
 
-    public void visitByteSignature(ByteSignature b){
+    public void visitByteSignature(ByteSignature b) {
         resultType = getFactory().makeByte();
     }
 
-    public void visitBooleanSignature(BooleanSignature b){
+    public void visitBooleanSignature(BooleanSignature b) {
         resultType = getFactory().makeBool();
     }
 
-    public void visitShortSignature(ShortSignature s){
+    public void visitShortSignature(ShortSignature s) {
         resultType = getFactory().makeShort();
     }
 
-    public void visitCharSignature(CharSignature c){
+    public void visitCharSignature(CharSignature c) {
         resultType = getFactory().makeChar();
     }
 
-    public void visitIntSignature(IntSignature i){
+    public void visitIntSignature(IntSignature i) {
         resultType = getFactory().makeInt();
     }
 
-    public void visitLongSignature(LongSignature l){
+    public void visitLongSignature(LongSignature l) {
         resultType = getFactory().makeLong();
     }
 
-    public void visitFloatSignature(FloatSignature f){
+    public void visitFloatSignature(FloatSignature f) {
         resultType = getFactory().makeFloat();
     }
 
-    public void visitDoubleSignature(DoubleSignature d){
+    public void visitDoubleSignature(DoubleSignature d) {
         resultType = getFactory().makeDouble();
     }
 
-    public void visitVoidDescriptor(VoidDescriptor v){
+    public void visitVoidDescriptor(VoidDescriptor v) {
         resultType = getFactory().makeVoid();
     }
 }
