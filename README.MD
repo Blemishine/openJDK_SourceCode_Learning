@@ -34,3 +34,7 @@ JDK源码学习
 - 反射机制实现链
 - 签名机制(Signature)->各类签名(sun.reflect.tree.*Signature)
 - ClassRepository
+
+## 0326
+- sun.reflect.generics.visitor.Reilfier->StringBuilder
+- StringBuilder的具体实现
