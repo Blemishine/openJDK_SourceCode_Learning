@@ -8,6 +8,8 @@ public final class System {
         registerNatives();
     }
 
+    public final static PrintStream out = null;
+
     public static native void arraycopy(Object src, int srcPos, Object des, int destPos, int length);
 
     public static native long nanoTime();

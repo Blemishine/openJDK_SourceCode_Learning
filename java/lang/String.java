@@ -63,7 +63,18 @@ public final class String implements java.io.Serializable, CharSequence {
         return value[index];
     }
 
-    public String subString(int beginIndex, int endIndex) {
+    public String substring(int beginIndex) {
+        if (beginIndex < 0) {
+            throw new StringIndexOutOfBoundsException(beginIndex);
+        }
+        int subLen = value.length - beginIndex;
+        if (subLen < 0) {
+            throw new StringIndexOutOfBoundsException(subLen);
+        }
+        return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
+    }
+
+    public String substring(int beginIndex, int endIndex) {
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(beginIndex);
         }
@@ -78,7 +89,7 @@ public final class String implements java.io.Serializable, CharSequence {
     }
 
     public CharSequence subSequence(int beginIndex, int endIndex) {
-        return this.subString(beginIndex, endIndex);
+        return this.substring(beginIndex, endIndex);
     }
 
     public boolean equalsIgnoreCase(String anotherString) {

@@ -38,3 +38,8 @@ JDK源码学习
 ## 0326
 - sun.reflect.generics.visitor.Reilfier->StringBuilder
 - StringBuilder的具体实现
+
+## 0327
+- sun.reflect.generics.parser.SignatureParser->System.out.println()
+- 开始实现java.io下的类
+- 从PrintStream入手，学习java的输入输出流实现
