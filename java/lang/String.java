@@ -63,7 +63,71 @@ public final class String implements java.io.Serializable, CharSequence {
         return value[index];
     }
 
-    public String subString(int beginIndex, int endIndex) {
+    public int indexOf(int ch) {
+        return indexOf(ch, 0);
+    }
+
+
+
+    public int indexOf(String str) {
+        return indexOf(str, 0);
+    }
+
+    public int indexOf(String str, int fromIndex) {
+        return indexOf(value, 0, value.length, str.value, 0, str.value.length, fromIndex);
+    }
+
+    static int indexOf(char[] source, int sourceOffset, int sourceCount, String target, int fromIndex) {
+        return indexOf(source, sourceOffset, sourceCount,
+                target.value, 0, target.value.length,
+                fromIndex);
+    }
+
+    static int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset, int targetCount,
+                       int fromIndex) {
+        if (fromIndex >= sourceCount) {
+            return (targetCount == 0 ? sourceCount : -1);
+        }
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        if (targetCount == 0) {
+            return fromIndex;
+        }
+
+        char first = target[targetOffset];
+        int max = sourceOffset + (sourceCount - targetCount);
+
+        for (int i = sourceOffset + fromIndex; i <= max; i++) {
+            if (source[i] != first) {
+                while (++i <= max && source[i] != first);
+            }
+
+            if (i <= max) {
+                int j = i + 1;
+                int end = j + targetCount - 1;
+                for (int k = targetOffset + 1; j < end && source[j] == target[k]; j++, k++);
+
+                if (j == end) {
+                    return i - sourceOffset;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public String substring(int beginIndex) {
+        if (beginIndex < 0) {
+            throw new StringIndexOutOfBoundsException(beginIndex);
+        }
+        int subLen = value.length - beginIndex;
+        if (subLen < 0) {
+            throw new StringIndexOutOfBoundsException(subLen);
+        }
+        return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
+    }
+
+    public String substring(int beginIndex, int endIndex) {
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(beginIndex);
         }
@@ -78,7 +142,7 @@ public final class String implements java.io.Serializable, CharSequence {
     }
 
     public CharSequence subSequence(int beginIndex, int endIndex) {
-        return this.subString(beginIndex, endIndex);
+        return this.substring(beginIndex, endIndex);
     }
 
     public boolean equalsIgnoreCase(String anotherString) {
@@ -94,7 +158,7 @@ public final class String implements java.io.Serializable, CharSequence {
         char pa[] = other.value;
         int po = ooffset;
 
-        if ((ooffset < 0) || (toffset < 0) || (toffset > (long)value.length - len) || (ooffset > (long)other.value.length - len)) {
+        if ((ooffset < 0) || (toffset < 0) || (toffset > (long) value.length - len) || (ooffset > (long) other.value.length - len)) {
             return false;
         }
 
