@@ -63,10 +63,119 @@ public final class String implements java.io.Serializable, CharSequence {
         return value[index];
     }
 
+    public boolean startsWith(String prefix, int toffset) {
+        char ta[] = value;
+        int to = toffset;
+        char pa[] = prefix.value;
+        int po = 0;
+        int pc = prefix.value.length;
+        if ((toffset < 0) || (toffset > value.length - pc)) {
+            return false;
+        }
+        while (--pc >= 0) {
+            if (ta[to++] != pa[po++]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean startsWith(String prefix) {
+        return startsWith(prefix, 0);
+    }
+
+    public boolean endsWith(String suffix) {
+        return startsWith(suffix, value.length - suffix.value.length);
+    }
+
+
+    public int hashCode() {
+        int h = hash;
+        if (h == 0 && value.length > 0) {
+            char val[] = value;
+
+            for (int i = 0; i < value.length; i++) {
+                h = 31 * h + h + val[i];
+            }
+
+            hash = h;
+        }
+        return h;
+    }
+
     public int indexOf(int ch) {
         return indexOf(ch, 0);
     }
 
+    public int indexOf(int ch, int fromIndex) {
+        final int max = value.length;
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        } else if (fromIndex >= max) {
+            return -1;
+        }
+
+        if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+            final char[] value = this.value;
+            for (int i = fromIndex; i < max; i++) {
+                if (value[i] == ch) {
+                    return i;
+                }
+            }
+            return -1;
+        } else {
+            return indexOfSupplementary(ch, fromIndex);
+        }
+    }
+
+    private int indexOfSupplementary(int ch, int fromIndex) {
+        if (Character.isValidCodePoint(ch)) {
+            final char[] value = this.value;
+            final char hi = Character.highSurrogate(ch);
+            final char lo = Character.lowSurrogate(ch);
+            final int max = value.length - 1;
+            for (int i = fromIndex; i < max; i++) {
+                if (value[i] == hi && value[i + 1] == lo) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(int ch) {
+        return lastIndexOf(ch, value.length - 1);
+    }
+
+    public int lastIndexOf(int ch, int fromIndex) {
+        if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+            final char[] value = this.value;
+            int i = Math.min(fromIndex, value.length - 1);
+            for (; i >= 0; i--) {
+                if (value[i] == ch) {
+                    return i;
+                }
+            }
+            return -1;
+        } else {
+            return lastIndexOfSupplementary(ch, fromIndex);
+        }
+    }
+
+    private int lastIndexOfSupplementary(int ch, int fromIndex) {
+        if (Character.isValidCodePoint(ch)) {
+            final char[] value = this.value;
+            char hi = Character.highSurrogate(ch);
+            char lo = Character.lowSurrogate(ch);
+            int i = Math.min(fromIndex, value.length - 2);
+            for (; i >= 0; i--) {
+                if (value[i] == hi && value[i + 1] == lo) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
 
     public int indexOf(String str) {
@@ -100,13 +209,13 @@ public final class String implements java.io.Serializable, CharSequence {
 
         for (int i = sourceOffset + fromIndex; i <= max; i++) {
             if (source[i] != first) {
-                while (++i <= max && source[i] != first);
+                while (++i <= max && source[i] != first) ;
             }
 
             if (i <= max) {
                 int j = i + 1;
                 int end = j + targetCount - 1;
-                for (int k = targetOffset + 1; j < end && source[j] == target[k]; j++, k++);
+                for (int k = targetOffset + 1; j < end && source[j] == target[k]; j++, k++) ;
 
                 if (j == end) {
                     return i - sourceOffset;
@@ -202,22 +311,22 @@ public final class String implements java.io.Serializable, CharSequence {
         return result;
     }
 
-
-    public int hashCode() {
-        int h = hash;
-        if (h == 0 && value.length > 0) {
-            char val[] = value;
-
-            for (int i = 0; i < value.length; i++) {
-                h = 31 * h + h + val[i];
-            }
-
-            hash = h;
-        }
-        return h;
-    }
-
     public static String valueOf(Object obj) {
         return (obj == null) ? "null" : obj.toString();
+    }
+
+    public String trim() {
+        int len = value.length;
+        int st = 0;
+        char[] val = value;
+
+        while ((st < len) && (val[st] <= ' ')) {
+            st++;
+        }
+        while ((st < len) && (val[len - 1] <= ' ')) {
+            len--;
+        }
+
+        return ((st > 0) || (len < value.length)) ? substring(st, len) : this;
     }
 }

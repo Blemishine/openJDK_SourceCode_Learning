@@ -10,6 +10,24 @@ public final class Character implements java.io.Serializable, Comparable<Charact
 
     public static final char MAX_VALUE = '\uFFFF';
 
+    public static final char MIN_HIGH_SURROGATE = '\uD800';
+
+    public static final char MAX_HIGH_SURROGATE = '\uDBBF';
+
+    public static final char MIN_LOW_SURROGATE = '\uDC00';
+
+    public static final char MAX_LOW_SURROGATE = '\uDFFF';
+
+    public static final char MIN_SURROGATE = MIN_HIGH_SURROGATE;
+
+    public static final char MAX_SURROGATE = MAX_LOW_SURROGATE;
+
+    public static final int MIN_SUPPLEMENTARY_CODE_POINT = 0x010000;
+
+    public static final int MIN_CODE_POINT = 0x000000;
+
+    public static final int MAX_CODE_POINT = 0X10FFFF;
+
     public static char toLowerCase(char ch) {
         return (char)toLowerCase((int)ch);
     }
@@ -40,5 +58,19 @@ public final class Character implements java.io.Serializable, Comparable<Charact
 
     public static int compare(char x, char y) {
         return  x - y;
+    }
+
+    public static boolean isValidCodePoint(int codePoint) {
+        int plane = codePoint >>> 16;
+        return plane < ((MAX_CODE_POINT + 1) >>> 16);
+    }
+
+    public static char highSurrogate(int codePoint) {
+        return (char) ((codePoint >>> 10) +
+                (MIN_HIGH_SURROGATE - (MIN_SUPPLEMENTARY_CODE_POINT >>> 10)));
+    }
+
+    public static char lowSurrogate(int codePoint) {
+        return (char) ((codePoint & 0x3ff) + MIN_LOW_SURROGATE);
     }
 }

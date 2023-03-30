@@ -1,6 +1,12 @@
 package java.security;
 
+import sun.security.util.Debug;
+
 public class AccessControlContext {
+
+    private static boolean debugInit = false;
+
+    private static Debug debug = null;
 
     static Debug getDebug() {
         if (debugInit) {
