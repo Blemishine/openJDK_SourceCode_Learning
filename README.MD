@@ -48,3 +48,9 @@ JDK源码学习
 - PrintStream->println->BufferedWriter
 - BufferedWriter涉及JVM与系统交互过程
 - java.security.AccessController(访问控制)->sun.security.action.getPropertyAction(获取系统Property)
+
+## 0330
+- sun.security.action.getPropertyAction->涉及java.lang.reflect/java.security
+- 从security入手->学习SecurityManager等类对包访问的权限控制
+- 从reflect入手->学习java.lang.reflect/sun.reflect如何实现类对包访问的权限控制
+- 转到Hashtable实现

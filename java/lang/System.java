@@ -1,6 +1,7 @@
 package java.lang;
 
 import java.io.PrintStream;
+import java.util.Properties;
 
 public final class System {
 
@@ -13,6 +14,8 @@ public final class System {
     }
 
     public final static PrintStream out = null;
+
+    private static Properties props;
 
     public static native void arraycopy(Object src, int srcPos, Object des, int destPos, int length);
 
